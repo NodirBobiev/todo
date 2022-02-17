@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Teams{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('team.create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for team in teams %}
+    <div>
+        <h1>{{ team['title'] }}</h1>
+        <p>ID: {{ team['id'] }}</p>
+        <p>Owner: {{ team['owner_id'] }}</p>
+        <p>user: {{ team['username'] }}</p>
+    </div>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
