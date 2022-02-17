@@ -26,7 +26,7 @@ def create(team_id):
             db = get_db()
             db.execute(
                 "INSERT INTO task (title, team_id) VALUES(?,?)",
-                (title, team_id)
+                (title, team['id'])
             )
             db.commit()
             return redirect(url_for('team.index'))

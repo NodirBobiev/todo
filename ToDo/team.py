@@ -42,9 +42,9 @@ def create():
 
 def get_team(id, check_owner=True):
     team = get_db().execute(
-        "SELECT p.id, title, owner_id, username"
-        " FROM team p JOIN user u ON p.owner_id = u.id"
-        " WHERE p.id = ?",
+        "SELECT tm.id, title, owner_id, username"
+        " FROM team tm JOIN user u ON tm.owner_id = u.id"
+        " WHERE tm.id = ?",
         (id,)
     ).fetchone()
 
@@ -58,7 +58,13 @@ def get_team(id, check_owner=True):
 
 @bp.route('/team/<int:id>', methods = ['GET', 'POST'])
 @login_required
-def team(id):
+def open_team(id):
     team = get_team(id)
-    teams = []
-    return render_template('team/index.html', teams = teams)
+    tasks = get_db().execute(
+        "SELECT tsk.id, tsk.title, tsk.team_id"
+        " FROM task tsk JOIN team t ON tsk.team_id = t.id"
+        " WHERE t.id = ?",
+        (id,)
+    ).fetchall()
+
+    return render_template('team/content.html', tasks=tasks, team = team)
