@@ -17,7 +17,7 @@ def index():
     ).fetchall()
     return render_template('team/index.html', teams = teams)
 
-@bp.route('/create', methods=['GET', 'POST'])
+@bp.route('/team/create', methods=['GET', 'POST'])
 @login_required
 def create():
     if request.method == 'POST':
@@ -38,7 +38,7 @@ def create():
             db.commit()
             return redirect(url_for('team.index'))
     
-    return render_template('team/create.html')
+    return render_template('team/create.html', header_title = "New Team")
 
 def get_team(id, check_owner=True):
     team = get_db().execute(

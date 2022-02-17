@@ -29,6 +29,9 @@ def create_app(test_config=None):
     app.register_blueprint(team.bp)
     app.add_url_rule('/', endpoint='index')
 
+    from . import task
+    app.register_blueprint(task.bp)
+
     @app.route("/hello")
     def hello():
         return 'Hello World!'
