@@ -24,7 +24,7 @@
         </div>
         <div style="box-sizing: border-box; width: 25%; border-left: 1px solid lightgray; padding-left:1rem;">
             {% if team['owner_id'] == g.user['id'] %}
-                <form action="{{ url_for('team.add', id=team['id']) }}" method="post">
+                <form action="{{ url_for('team.add_user', id=team['id']) }}" method="post">
                     <label for="username">Username</label>
                     <input name="username" id="username" value="{{ request.form['username'] }}" required>
                     <input type="submit" value="Add">
@@ -33,7 +33,14 @@
             {% endif %}
             <div>
                 {% for user in users %}
-                    <div><p>{{ user['username'] }}</p></div>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <div><p>{{ user['username'] }}</p></div>
+                        {% if team['owner_id'] == g.user['id'] %}
+                            <form action="{{ url_for('team.delete_user', team_id=team['id'], user_id=user['id']) }}" method="post">
+                                <input class="danger" type="submit" value="Delete" onclick="return confirm('Do you really want to remove the user?');">
+                            </form>
+                        {% endif %}
+                    </div>
                     <hr>
                 {% endfor %}
             </div>

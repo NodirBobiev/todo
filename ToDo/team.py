@@ -75,10 +75,10 @@ def get_team(id, check_member = True, check_owner=False):
     if check_owner and team['owner_id'] != g.user['id']:
         abort(403)
     
-    if check_member is False and check_member:
+    if check_owner is False and check_member:
         relation = db.execute(
-            "SELECT * FROM userteam WHERE (user_id, team_id) IN ((?,?))",
-            ((g.user['id'], id),)
+            "SELECT * FROM userteam WHERE user_id = ? AND team_id = ?",
+            (g.user['id'], id)
         ).fetchone()
         if relation is None:
             abort(403)
@@ -107,14 +107,14 @@ def open_team(id):
     
     placeholders = ', '.join(list(str(i['user_id']) for i in users_ids))
     
-    query = f"SELECT username FROM user WHERE id IN ({placeholders})"
+    query = f"SELECT username, id FROM user WHERE id IN ({placeholders})"
     users = db.execute(query).fetchall()
 
     return render_template('team/content.html', tasks=tasks, team = team, users=users)
 
-@bp.route('/team/<int:id>/add', methods=['POST'])
+@bp.route('/team/<int:id>/adduser', methods=['POST'])
 @login_required
-def add(id):
+def add_user(id):
     team = get_team(id)
     username = request.form['username']
     db = get_db()
@@ -143,4 +143,26 @@ def add(id):
     return redirect(url_for("team.open_team", id=id))
 
 
+@bp.route('/team/<int:team_id>/deleteuser/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(team_id, user_id):
+    team = get_team(team_id, check_owner=True)
+    if team['owner_id'] == user_id:
+        flash(f"Owner of the team cannot be removed.")
+    else:
+        db = get_db()
+        relation = db.execute(
+            f"SELECT * FROM userteam WHERE (user_id = {user_id} AND team_id = {team_id})"
+        ).fetchone()
+
+        if relation is not None:
+            db.execute(
+                "DELETE FROM userteam WHERE id = ?",
+                (relation['id'],)
+            )
+            db.commit()
+        
+        else:
+            flash(f"Something went wrong while deleting user from the team.")
+    return redirect(url_for("team.open_team", id = team_id))
 
