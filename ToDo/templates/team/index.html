@@ -13,7 +13,11 @@
         <h1><a class="action" href="{{ url_for('team.open_team', id=team['id'])}}">{{ team['title'] }}</a></h1>
         <p>ID: {{ team['id'] }}</p>
         <p>Owner: {{ team['owner_id'] }}</p>
-        <p>user: {{ team['username'] }}</p>
+        {% if team['owner_id'] == g.user['id'] %}
+          <p>Your role: <b>owner</b> </p>
+        {% else %}
+          <p>Your role: member </p>
+        {% endif%}
     </div>
     {% if not loop.last %}
       <hr>

@@ -60,8 +60,9 @@ def create():
     
     return render_template('team/create.html', header_title = "New Team")
 
-def get_team(id, check_owner=True):
-    team = get_db().execute(
+def get_team(id, check_member = True, check_owner=False):
+    db = get_db()
+    team = db.execute(
         "SELECT tm.id, title, owner_id, username"
         " FROM team tm JOIN user u ON tm.owner_id = u.id"
         " WHERE tm.id = ?",
@@ -74,6 +75,14 @@ def get_team(id, check_owner=True):
     if check_owner and team['owner_id'] != g.user['id']:
         abort(403)
     
+    if check_member is False and check_member:
+        relation = db.execute(
+            "SELECT * FROM userteam WHERE (user_id, team_id) IN ((?,?))",
+            ((g.user['id'], id),)
+        ).fetchone()
+        if relation is None:
+            abort(403)
+
     return team
 
 @bp.route('/team/<int:id>', methods = ['GET', 'POST'])
