@@ -31,3 +31,31 @@ def create(team_id):
             db.commit()
             return redirect(url_for('team.index'))
     return render_template("team/create.html", header_title = "New task")
+
+
+@bp.route('/team/<int:team_id>/delete/<int:task_id>', methods=['POST'])
+@login_required
+def delete(team_id, task_id):
+    get_team(team_id)
+    print(f"team_id = {team_id},  task_id = {task_id}") 
+    db = get_db()
+    task = db.execute(
+        "SELECT * FROM task WHERE id = ?", (task_id,)
+    ).fetchone()
+    error = None
+
+    if task is None:
+        error = f"Task id {task_id} doesn't exist"
+    
+    if team_id != task['team_id']:
+        error = f"Task id {task_id} doesn't belong to Team id {team_id}."
+    
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(
+            "DELETE FROM task WHERE id = ?", (task_id,)
+        )
+        db.commit()
+
+    return redirect(url_for("team.open_team", id=team_id))

@@ -1,3 +1,6 @@
+from ast import AsyncFunctionDef
+from distutils.errors import DistutilsFileError
+from signal import SIG_DFL
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -68,3 +71,17 @@ def open_team(id):
     ).fetchall()
 
     return render_template('team/content.html', tasks=tasks, team = team)
+
+@bp.route('/team/<int:id>/add', methods = ['POST'])
+@login_required
+def add_user(id):
+    team = get_team(id)
+    
+    return redirect(url_for("team.open_team", id=id))
+
+@bp.route('/team/<int:id>/select', methods = ['GET'])
+@login_required
+def select_user(id):
+    team = get_team(id)
+    
+

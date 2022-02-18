@@ -2,6 +2,7 @@
 {% block header %}
     <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
     <a class="action" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
+    <a href="#">Add User</a>
 {% endblock %}
 
 {% block content %}
@@ -11,6 +12,9 @@
             <p>ID: {{ task['id'] }}</p>
             <p>team ID: {{ task['team_id'] }}</p>
             <p>team: {{ team['title'] }}</p>
+            <form action="{{ url_for('task.delete', team_id=task['team_id'], task_id=task['id']) }}" method="post">
+                <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+            </form>
         </div>
         {% if not loop.last %}
             <hr>
