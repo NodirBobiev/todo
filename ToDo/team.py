@@ -14,10 +14,17 @@ bp = Blueprint('team', __name__)
 @bp.route('/')
 def index():
     db = get_db()
-    teams = db.execute(
-        "SELECT p.id, title, owner_id, username"
-        " From team p JOIN user u ON p.owner_id = u.id"
-    ).fetchall()
+    teams = []
+    if g.user is not None:    
+        teams_ids = db.execute(
+            "SELECT team_id FROM userteam ut WHERE ut.user_id = ?",
+            (g.user['id'], )
+        ).fetchall()
+
+        placeholders = ', '.join(list(str(i['team_id']) for i in teams_ids))
+        query = f"SELECT * FROM team WHERE id IN ({placeholders})"
+        teams = db.execute(query).fetchall()
+
     return render_template('team/index.html', teams = teams)
 
 @bp.route('/team/create', methods=['GET', 'POST'])
@@ -37,6 +44,16 @@ def create():
             db.execute(
                 "INSERT INTO team (title, owner_id) VALUES (?, ?)",
                 (title, g.user['id'])
+            )
+            db.commit()
+
+            team = db.execute(
+                "SELECT id FROM team WHERE title = ?", 
+                (title,)
+            ).fetchone()
+            db.execute(
+                "INSERT INTO userteam (user_id, team_id) VALUES(?, ?)",
+                (g.user['id'], team['id'],)
             )
             db.commit()
             return redirect(url_for('team.index'))
