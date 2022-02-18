@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS userteam;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,4 +21,13 @@ CREATE TABLE task(
   team_id INTEGER NOT NULL,
   title TEXT NOT NULL,
   FOREIGN KEY (team_id) REFERENCES team (id)
+);
+
+CREATE TABLE userteam(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  team_id INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES user (id),
+  FOREIGN KEY (team_id) REFERENCES team (id),
+  UNIQUE (user_id, team_id)
 );

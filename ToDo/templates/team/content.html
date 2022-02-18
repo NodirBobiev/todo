@@ -2,22 +2,41 @@
 {% block header %}
     <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
     <a class="action" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
-    <a href="#">Add User</a>
 {% endblock %}
 
 {% block content %}
-    {% for task in tasks %}
-        <div>
-            <h1>{{ task['title'] }}</h1>
-            <p>ID: {{ task['id'] }}</p>
-            <p>team ID: {{ task['team_id'] }}</p>
-            <p>team: {{ team['title'] }}</p>
-            <form action="{{ url_for('task.delete', team_id=task['team_id'], task_id=task['id']) }}" method="post">
-                <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-            </form>
+    <div style="display: flex; flex-direction:row;">
+        <div style="width:75%;">
+            {% for task in tasks %}
+                <div>
+                    <h1>{{ task['title'] }}</h1>
+                    <p>ID: {{ task['id'] }}</p>
+                    <p>team ID: {{ task['team_id'] }}</p>
+                    <p>team: {{ team['title'] }}</p>
+                    <form action="{{ url_for('task.delete', team_id=team['id'], task_id=task['id']) }}" method="post">
+                        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+                    </form>
+                </div>
+                {% if not loop.last %}
+                <hr>
+                {% endif %}
+            {% endfor %}
         </div>
-        {% if not loop.last %}
+        <div style="box-sizing: border-box; width: 25%; border-left: 1px solid lightgray; padding-left:1rem;">
+            <form action="{{ url_for('team.add', id=team['id']) }}" method="post">
+                <label for="username">Username</label>
+                <input name="username" id="username" value="{{ request.form['username'] }}" required>
+                <input type="submit" value="Add">
+            </form>
             <hr>
-        {% endif %}
-    {% endfor %}
+            <div>
+                {% for user in users %}
+                    <div>{{ user['username'] }}</div>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    
 {% endblock %}

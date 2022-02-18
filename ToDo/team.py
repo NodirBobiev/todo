@@ -63,25 +63,58 @@ def get_team(id, check_owner=True):
 @login_required
 def open_team(id):
     team = get_team(id)
-    tasks = get_db().execute(
+    db = get_db()
+    tasks = db.execute(
         "SELECT tsk.id, tsk.title, tsk.team_id"
         " FROM task tsk JOIN team t ON tsk.team_id = t.id"
         " WHERE t.id = ?",
         (id,)
     ).fetchall()
 
-    return render_template('team/content.html', tasks=tasks, team = team)
+    users_ids = db.execute(
+        "SELECT user_id FROM userteam ut"
+        " JOIN team t ON ut.team_id = t.id"
+        " WHERE t.id = ?",
+        (id,)
+    ).fetchall()
 
-@bp.route('/team/<int:id>/add', methods = ['POST'])
+    
+    placeholders = ', '.join(list(str(i['user_id']) for i in users_ids))
+    
+    query = f"SELECT username FROM user WHERE id IN ({placeholders})"
+    users = db.execute(query).fetchall()
+
+    return render_template('team/content.html', tasks=tasks, team = team, users=users)
+
+@bp.route('/team/<int:id>/add', methods=['POST'])
 @login_required
-def add_user(id):
+def add(id):
     team = get_team(id)
+    username = request.form['username']
+    db = get_db()
+    user = db.execute(
+        "SELECT * FROM user WHERE username = ?", (username,)
+    ).fetchone()
+    error = None
+
+    if user is None:
+        error = f"User {username} doesn't exist."
+        
+    if error is None:
+        try:
+            db.execute(
+                "INSERT INTO userteam (user_id, team_id) VALUES(?, ?)",
+                (user['id'], team['id'],)
+            )
+            db.commit()
+        except db.IntegrityError:
+            error = f"User {username} is already in the team."
+        else:
+            error = f"User {username} has been successfully added."
+    
+    flash(error)
     
     return redirect(url_for("team.open_team", id=id))
 
-@bp.route('/team/<int:id>/select', methods = ['GET'])
-@login_required
-def select_user(id):
-    team = get_team(id)
-    
+
 

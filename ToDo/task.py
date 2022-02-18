@@ -29,7 +29,7 @@ def create(team_id):
                 (title, team['id'])
             )
             db.commit()
-            return redirect(url_for('team.index'))
+            return redirect(url_for('team.open_team', id=team_id))
     return render_template("team/create.html", header_title = "New task")
 
 
