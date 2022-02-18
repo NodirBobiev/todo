@@ -23,15 +23,17 @@
             {% endfor %}
         </div>
         <div style="box-sizing: border-box; width: 25%; border-left: 1px solid lightgray; padding-left:1rem;">
-            <form action="{{ url_for('team.add', id=team['id']) }}" method="post">
-                <label for="username">Username</label>
-                <input name="username" id="username" value="{{ request.form['username'] }}" required>
-                <input type="submit" value="Add">
-            </form>
-            <hr>
+            {% if team['owner_id'] == g.user['id'] %}
+                <form action="{{ url_for('team.add', id=team['id']) }}" method="post">
+                    <label for="username">Username</label>
+                    <input name="username" id="username" value="{{ request.form['username'] }}" required>
+                    <input type="submit" value="Add">
+                </form>
+                <hr>
+            {% endif %}
             <div>
                 {% for user in users %}
-                    <div>{{ user['username'] }}</div>
+                    <div><p>{{ user['username'] }}</p></div>
                     <hr>
                 {% endfor %}
             </div>
