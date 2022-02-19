@@ -2,6 +2,11 @@
 {% block header %}
     <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
     <a class="action" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
+    {% if team['owner_id'] != g.user['id'] %}
+        <form action="{{ url_for('team.user_leave', team_id=team['id']) }}" method="post">
+            <input class="danger" type="submit" value="Leave" onclick="return confirm('Do you really want to leave?');">
+        </form>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -9,7 +14,7 @@
         <div style="width:75%;">
             {% for task in tasks %}
                 <div>
-                    <h1>{{ task['title'] }}</h1>
+                    <h2>{{ task['title'] }}</h2>
                     <p>ID: {{ task['id'] }}</p>
                     <p>team ID: {{ task['team_id'] }}</p>
                     <p>team: {{ team['title'] }}</p>

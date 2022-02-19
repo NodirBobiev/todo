@@ -115,7 +115,7 @@ def open_team(id):
 @bp.route('/team/<int:id>/adduser', methods=['POST'])
 @login_required
 def add_user(id):
-    team = get_team(id)
+    team = get_team(id, check_owner=True)
     username = request.form['username']
     db = get_db()
     user = db.execute(
@@ -165,4 +165,15 @@ def delete_user(team_id, user_id):
         else:
             flash(f"Something went wrong while deleting user from the team.")
     return redirect(url_for("team.open_team", id = team_id))
+
+@bp.route('/team/<int:team_id>/leave', methods=['POST'])
+@login_required
+def user_leave(team_id):
+    team = get_team(team_id)
+    db = get_db()
+    db.execute(
+        f"DELETE FROM userteam WHERE (user_id = {g.user['id']} AND team_id = {team_id})"
+    )
+    db.commit()
+    return redirect(url_for("team.index"))
 

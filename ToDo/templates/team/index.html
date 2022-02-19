@@ -10,7 +10,7 @@
 {% block content %}
   {% for team in teams %}
     <div>
-        <h1><a class="action" href="{{ url_for('team.open_team', id=team['id'])}}">{{ team['title'] }}</a></h1>
+        <h1 class="task-title"><a class="action" href="{{ url_for('team.open_team', id=team['id'])}}">{{ team['title'] }}</a></h1>
         <p>ID: {{ team['id'] }}</p>
         <p>Owner: {{ team['owner_id'] }}</p>
         {% if team['owner_id'] == g.user['id'] %}
