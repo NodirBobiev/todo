@@ -15,6 +15,9 @@
         <p>Owner: {{ team['owner_id'] }}</p>
         {% if team['owner_id'] == g.user['id'] %}
           <p>Your role: <b>owner</b> </p>
+          <form action="{{ url_for('team.delete', id=team['id']) }}" method="post">
+            <input class="danger" type="submit" value="Delete" onclick="return confirm('Do you want to delete the team?');">
+        </form>
         {% else %}
           <p>Your role: member </p>
         {% endif%}

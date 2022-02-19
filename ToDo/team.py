@@ -1,6 +1,3 @@
-from ast import AsyncFunctionDef
-from distutils.errors import DistutilsFileError
-from signal import SIG_DFL
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -26,6 +23,7 @@ def index():
         teams = db.execute(query).fetchall()
 
     return render_template('team/index.html', teams = teams)
+
 
 @bp.route('/team/create', methods=['GET', 'POST'])
 @login_required
@@ -60,6 +58,7 @@ def create():
     
     return render_template('team/create.html', header_title = "New Team")
 
+
 def get_team(id, check_member = True, check_owner=False):
     db = get_db()
     team = db.execute(
@@ -84,6 +83,7 @@ def get_team(id, check_member = True, check_owner=False):
             abort(403)
 
     return team
+
 
 @bp.route('/team/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -111,6 +111,7 @@ def open_team(id):
     users = db.execute(query).fetchall()
 
     return render_template('team/content.html', tasks=tasks, team = team, users=users)
+
 
 @bp.route('/team/<int:id>/adduser', methods=['POST'])
 @login_required
@@ -165,6 +166,25 @@ def delete_user(team_id, user_id):
         else:
             flash(f"Something went wrong while deleting user from the team.")
     return redirect(url_for("team.open_team", id = team_id))
+
+
+@bp.route('/team/<int:id>/delete', methods=['POST'])
+@login_required
+def delete(id):
+    team = get_team(id, check_owner=True)
+    db = get_db()
+    db.execute(
+        "DELETE FROM userteam WHERE team_id = ?",
+        (id,)
+    )
+    db.execute(
+        "DELETE FROM team WHERE id = ?",
+        (id,)
+    )
+    db.commit()
+    flash(f"Team {team['title']} has been successfully deleted.")
+    return redirect(url_for('team.index'))
+    
 
 @bp.route('/team/<int:team_id>/leave', methods=['POST'])
 @login_required
