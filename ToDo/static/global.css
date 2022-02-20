@@ -1,3 +1,9 @@
+html { 
+    font-family: "Segoe UI", sans-serif; 
+    background: #eee;
+}
+
+
 body { 
     max-width: 1200px; 
     margin: 0 auto; 
@@ -30,7 +36,7 @@ hr {
 .headnav ul  { 
     display: flex; 
     list-style: none; 
-    margin: 0; 
+    margin: 0 0.7rem; 
     padding: 0; 
 }
 .headnav h1 a{
@@ -38,13 +44,13 @@ hr {
     font-size: 4rem; 
     font-weight: bold;  
 }
-.headnav ul li a, header .action { 
+header .action { 
     display: block; 
     padding: 0.5rem; 
 }
 .one-of-two, .two-of-two{
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem;
     border-radius: 5px;
 }
 .one-of-two{
@@ -53,4 +59,40 @@ hr {
 .two-of-two{
     background: white;
     color: #a390e4
+}
+.teams{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-around;
+    
+}
+.team{
+    width: 300px;
+    padding: 0 1rem;
+    margin: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0px 0px 5px #ccc;
+}
+.btn{
+    border: none;
+    border-radius: 0.3em;
+    line-height: 2.5em;
+    display: block;
+    padding: 0 0.8em;
+    text-align: center;
+    font-size: 1rem;
+    width: fit-content;
+}
+.btn-danger{
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-secondary{
+    color: #fff;
+    background-color: #545b62;
+    border-color: #4e555b;
 }
