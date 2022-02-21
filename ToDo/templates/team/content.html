@@ -11,21 +11,29 @@
 
 {% block content %}
     <div style="display: flex; flex-direction:row;">
-        <div style="flex: auto;">
-            {% for task in tasks %}
-                <div>
-                    <h2>{{ task['title'] }}</h2>
-                    <p>ID: {{ task['id'] }}</p>
-                    <p>team ID: {{ task['team_id'] }}</p>
-                    <p>team: {{ team['title'] }}</p>
-                    <form action="{{ url_for('task.delete', team_id=team['id'], task_id=task['id']) }}" method="post">
-                        <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-                    </form>
+        <div style="flex:auto">
+            <div class="columns">
+                <div class="column"><p style="margin: auto;">Not Started</p></div>
+                <div class="column"><p style="margin: auto;">In process</p></div>
+                <div class="column"><p style="margin: auto;">Finished</p></div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    {% for task in tasks %}
+                        <div class="task">
+                            <h2>{{ task['title'] }}</h2>
+                            <p>ID: {{ task['id'] }}</p>
+                            <p>team ID: {{ task['team_id'] }}</p>
+                            <p>team: {{ team['title'] }}</p>
+                            <form action="{{ url_for('task.delete', team_id=team['id'], task_id=task['id']) }}" method="post">
+                                <input class="btn btn-danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+                            </form>
+                        </div>
+                    {% endfor %}
                 </div>
-                {% if not loop.last %}
-                <hr>
-                {% endif %}
-            {% endfor %}
+                <div class="column lft-border"></div>
+                <div class="column lft-border"></div>
+            </div>
         </div>
         <div style="box-sizing: border-box; width: 20%; border-left: 1px solid lightgray; padding-left:1rem;">
             {% if team['owner_id'] == g.user['id'] %}
