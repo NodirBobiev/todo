@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block header %}
     <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
-    <a class="action" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
-    {% if team['owner_id'] != g.user['id'] %}
-        <form action="{{ url_for('team.user_leave', team_id=team['id']) }}" method="post">
-            <input class="danger" type="submit" value="Leave" onclick="return confirm('Do you really want to leave?');">
-        </form>
-    {% endif %}
+    <a class="btn" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
+    <form style="width:20%; align-items: flex-end;" action="{{ url_for('team.user_leave', team_id=team['id']) }}" method="post">
+        {% if team['owner_id'] != g.user['id'] %}
+            <input class="btn btn-danger vert-auto" type="submit" value="Leave" onclick="return confirm('Do you really want to leave?');">
+        {% endif %}
+    </form>
 {% endblock %}
 
 {% block content %}
     <div style="display: flex; flex-direction:row;">
-        <div style="width:75%;">
+        <div style="flex: auto;">
             {% for task in tasks %}
                 <div>
                     <h2>{{ task['title'] }}</h2>
@@ -27,12 +27,12 @@
                 {% endif %}
             {% endfor %}
         </div>
-        <div style="box-sizing: border-box; width: 25%; border-left: 1px solid lightgray; padding-left:1rem;">
+        <div style="box-sizing: border-box; width: 20%; border-left: 1px solid lightgray; padding-left:1rem;">
             {% if team['owner_id'] == g.user['id'] %}
                 <form action="{{ url_for('team.add_user', id=team['id']) }}" method="post">
-                    <label for="username">Username</label>
-                    <input name="username" id="username" value="{{ request.form['username'] }}" required>
-                    <input type="submit" value="Add">
+                    <label class="input-label" for="username">Username</label>
+                    <input class="form-control" name="username" id="username" value="{{ request.form['username'] }}" required>
+                    <input class="btn btn-primary" type="submit" value="Add">
                 </form>
                 <hr>
             {% endif %}

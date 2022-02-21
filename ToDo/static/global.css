@@ -5,7 +5,7 @@ html {
 
 
 body { 
-    max-width: 1200px; 
+    max-width: 1250px; 
     margin: 0 auto; 
     background: white;
 }
@@ -110,6 +110,7 @@ header .action {
     margin: 1em 1em 0;
 }
 .form-control{
+    box-sizing: border-box;
     display: block;
     max-width: 600px;
     width: 100%;
@@ -121,4 +122,11 @@ header .action {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+}
+.vert-auto{
+    margin-top: auto !important;
+    margin-bottom: auto !important;   
+}
+.users-bar{
+    border: 1px solid #aaa;
 }
