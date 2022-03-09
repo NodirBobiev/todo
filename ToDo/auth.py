@@ -1,7 +1,7 @@
 import functools
 
 from flask import(
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify
 )
 from werkzeug.security import(
     check_password_hash, generate_password_hash
@@ -90,3 +90,15 @@ def login_required(view):
         return view(**kwargs)
     
     return wrapped_view
+
+@bp.route('/get/users', methods=['GET'])
+def get_users():
+    db = get_db()
+    rows = db.execute( 
+        "SELECT id, username FROM user ORDER BY id"
+    ).fetchall()  
+
+    users = list()
+    for row in rows:
+        users.append({"username": row["username"], "id":row["id"]})
+    return jsonify({"users":users})

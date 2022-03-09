@@ -1,0 +1,16 @@
+{% macro itself(task, team)%}
+    <div class="task">
+        <h2>{{ task['title'] }}</h2>
+        <p>ID: {{ task['id'] }}</p>
+        <p>team ID: {{ task['team_id'] }}</p>
+        <p>team: {{ team['title'] }}</p>
+        <p>stage: {{ task['stage'] }}</p>
+        <form action="{{ url_for('task.delete', team_id=team['id'], task_id=task['id']) }}" method="post">
+            <button class="btn btn-danger" type="submit" formaction="{{ url_for('task.delete', team_id=team['id'], task_id=task['id']) }}" onclick="return confirm('Are you sure?');">Remove</button>
+            <button class="btn btn-outline-warning" type="submit" formaction="{{ url_for('task.staged', team_id=team['id'], task_id=task['id'], stage = 0) }}">Back</button>
+            <button class="btn btn-outline-secondary" type="submit" formaction="{{ url_for('task.staged', team_id=team['id'], task_id=task['id'], stage = 1) }}">Pick</button>
+            <button class="btn btn-outline-success" type="submit" formaction="{{ url_for('task.staged', team_id=team['id'], task_id=task['id'], stage = 2) }}">Done</button>
+        
+        </form>
+    </div>
+{% endmacro %}

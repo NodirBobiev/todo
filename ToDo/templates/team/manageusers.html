@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+    <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    
+    <script>
+        var team_id = "{{team['id']}}";
+    </script>
+    <div class="form-group">
+        <div style="width: 600px;" class="hori-auto">
+            <input class="form-control" type="text" id="searchInput" onkeyup="filterUsers()" placeholder="Username...">
+            <div id="users-pool" style="margin:1em"></div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/search_users.js') }}"></script>
+{% endblock %}

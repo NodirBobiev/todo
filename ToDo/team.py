@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify, abort
 )
 from werkzeug.exceptions import abort
 
@@ -7,6 +7,7 @@ from ToDo.auth import login_required
 from ToDo.db import get_db
 
 bp = Blueprint('team', __name__)
+
 
 @bp.route('/')
 def index():
@@ -91,7 +92,7 @@ def open_team(id):
     team = get_team(id)
     db = get_db()
     tasks = db.execute(
-        "SELECT tsk.id, tsk.title, tsk.team_id"
+        "SELECT tsk.id, tsk.title, tsk.team_id, tsk.stage"
         " FROM task tsk JOIN team t ON tsk.team_id = t.id"
         " WHERE t.id = ?",
         (id,)
@@ -111,6 +112,93 @@ def open_team(id):
     users = db.execute(query).fetchall()
 
     return render_template('team/content.html', tasks=tasks, team = team, users=users)
+
+
+@bp.route('/team/<int:id>/get/users', methods=['GET'])
+@login_required
+def get_users(id):
+    get_team(id, check_owner=True)
+    db = get_db()
+    rows = db.execute( 
+        "SELECT user.id, username FROM userteam, user"
+        f" WHERE team_id = {id} AND user.id = user_id ORDER BY user_id"
+    ).fetchall()  
+
+    users = list()
+    for row in rows:
+        users.append({"username": row["username"], "id":row["id"]})
+    return jsonify({"users":users})
+
+
+@bp.route('/team/<int:id>/get/inviteds', methods=['GET'])
+@login_required
+def get_inviteds(id):
+    get_team(id, check_owner=True)
+    db = get_db()
+    rows = db.execute( 
+        "SELECT user.id, username FROM invitation, user"
+        f" WHERE team_id = {id} AND user.id = user_id ORDER BY user_id"
+    ).fetchall()  
+
+    users = list()
+    for row in rows:
+        users.append({"username": row["username"], "id":row["id"]})
+    return jsonify({"users":users})
+
+
+@bp.route('/team/<int:team_id>/cancel/invite/<int:user_id>', methods=['POST'])
+@login_required
+def cancel_invite(team_id, user_id):
+    get_team(team_id, check_owner=True)
+    db = get_db()
+
+    invitation_rel = db.execute(
+        f"SELECT * FROM invitation WHERE (user_id = {user_id} AND team_id = {team_id})"
+    ).fetchone()
+
+    if invitation_rel is not None:
+        db.execute(
+            f"DELETE FROM invitation WHERE id = {invitation_rel['id']}",
+        )
+        db.commit()
+    else:
+        abort(500)
+    return jsonify({"result":"OK"})
+
+
+@bp.route('/team/<int:team_id>/invite/user/<int:user_id>', methods=['POST'])
+@login_required
+def invite_user(team_id, user_id):
+    get_team(team_id, check_owner=True)
+    db = get_db()
+    
+    userteam_rel = db.execute(
+        f"SELECT * FROM userteam WHERE (user_id = {user_id} AND team_id = {team_id})"
+    ).fetchone()
+
+    invitation_rel = db.execute(
+        f"SELECT * FROM invitation WHERE (user_id = {user_id} AND team_id = {team_id})"
+    ).fetchone()
+
+    user = db.execute(
+        f"SELECT * FROM user WHERE id = {user_id}"
+    ).fetchone()
+
+    if user is not None and userteam_rel is None and invitation_rel is None:
+        db.execute(
+            f"INSERT INTO invitation (user_id, team_id) VALUES({user_id}, {team_id})"
+        )
+        db.commit()
+    else:
+        abort(500)
+    return jsonify({"result": "OK"})
+
+
+@bp.route('/team/<int:id>/manageusers', methods=['GET'])
+@login_required
+def manage_users(id):
+    team = get_team(id, check_owner=True)
+    return render_template('team/manageusers.html', team=team)
 
 
 @bp.route('/team/<int:id>/adduser', methods=['POST'])
@@ -144,12 +232,12 @@ def add_user(id):
     return redirect(url_for("team.open_team", id=id))
 
 
-@bp.route('/team/<int:team_id>/deleteuser/<int:user_id>', methods=['POST'])
+@bp.route('/team/<int:team_id>/kick/user/<int:user_id>', methods=['POST'])
 @login_required
-def delete_user(team_id, user_id):
+def kick_user(team_id, user_id):
     team = get_team(team_id, check_owner=True)
     if team['owner_id'] == user_id:
-        flash(f"Owner of the team cannot be removed.")
+        abort(403)
     else:
         db = get_db()
         relation = db.execute(
@@ -164,8 +252,8 @@ def delete_user(team_id, user_id):
             db.commit()
         
         else:
-            flash(f"Something went wrong while deleting user from the team.")
-    return redirect(url_for("team.open_team", id = team_id))
+            abort(500)
+    return jsonify({"result": "OK"})
 
 
 @bp.route('/team/<int:id>/delete', methods=['POST'])

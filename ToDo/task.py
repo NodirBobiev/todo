@@ -25,8 +25,8 @@ def create(team_id):
         else:
             db = get_db()
             db.execute(
-                "INSERT INTO task (title, team_id) VALUES(?,?)",
-                (title, team['id'])
+                "INSERT INTO task (title, team_id, stage) VALUES(?,?,?)",
+                (title, team['id'], 0)
             )
             db.commit()
             return redirect(url_for('team.open_team', id=team_id))
@@ -37,7 +37,6 @@ def create(team_id):
 @login_required
 def delete(team_id, task_id):
     get_team(team_id)
-    print(f"team_id = {team_id},  task_id = {task_id}") 
     db = get_db()
     task = db.execute(
         "SELECT * FROM task WHERE id = ?", (task_id,)
@@ -59,3 +58,23 @@ def delete(team_id, task_id):
         db.commit()
 
     return redirect(url_for("team.open_team", id=team_id))
+
+
+@bp.route('/team/<int:team_id>/task/<int:task_id>/staged/<int:stage>/', methods=['POST'])
+@login_required
+def staged(team_id, stage, task_id):
+    get_team(team_id)
+    db = get_db()
+    task = db.execute(
+        f"SELECT * FROM task WHERE (id = {task_id} AND team_id = {team_id})"
+    ).fetchone()
+
+    if task is None:
+        flash(f"Task id {task_id} doesn't exist")
+    else:
+        db.execute(
+            f"UPDATE task SET stage = {stage} WHERE id = {task_id}"
+        )
+        db.commit()
+    return redirect(url_for("team.open_team", id=team_id))
+
