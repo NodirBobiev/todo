@@ -72,9 +72,15 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
-            "SELECT * FROM user WHERE id = ?", (user_id,)
+        db = get_db()
+        g.user = db.execute(
+            f"SELECT * FROM user WHERE id = {user_id}"
         ).fetchone()
+        
+        g.new_invites = db.execute(
+            "SELECT COUNT(*) FROM invitation"
+            f" WHERE (user_id = {user_id} AND seen = 0)"
+        ).fetchone()[-1]
 
 @bp.route('/logout')
 def logout():

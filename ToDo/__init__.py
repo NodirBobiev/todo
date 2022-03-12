@@ -31,6 +31,9 @@ def create_app(test_config=None):
 
     from . import task
     app.register_blueprint(task.bp)
+
+    from . import invites
+    app.register_blueprint(invites.bp)
     
     from flask_jsglue import JSGlue
     jsglue = JSGlue()

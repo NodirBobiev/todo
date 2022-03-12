@@ -13,17 +13,18 @@ bp = Blueprint('team', __name__)
 def index():
     db = get_db()
     teams = []
-    if g.user is not None:    
+    invites = []
+    if g.user is not None:  
+        # finding the teams that user is in.  
         teams_ids = db.execute(
-            "SELECT team_id FROM userteam ut WHERE ut.user_id = ?",
-            (g.user['id'], )
+            f"SELECT team_id FROM userteam ut WHERE ut.user_id = {g.user['id']}"
         ).fetchall()
 
         placeholders = ', '.join(list(str(i['team_id']) for i in teams_ids))
         query = f"SELECT * FROM team WHERE id IN ({placeholders})"
         teams = db.execute(query).fetchall()
 
-    return render_template('team/index.html', teams = teams)
+    return render_template('team/index.html', teams = teams, invites = invites)
 
 
 @bp.route('/team/create', methods=['GET', 'POST'])
@@ -197,7 +198,7 @@ def invite_user(team_id, user_id):
 @bp.route('/team/<int:id>/manageusers', methods=['GET'])
 @login_required
 def manage_users(id):
-    team = get_team(id, check_owner=True)
+    team = get_team(id, check_member=True)
     return render_template('team/manageusers.html', team=team)
 
 

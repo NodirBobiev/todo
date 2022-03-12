@@ -1,4 +1,4 @@
-.usr-row{
+.row{
     border: 1px solid black;
     border-radius: 3px;
     padding: 0 1em;
@@ -7,13 +7,13 @@
     justify-content: space-between;
     align-items: center;
 }
-.usr-mbr{
+.row-succes{
     background-color: #28a745;
     background-image: none;
     border:none;
     color: white;
 }
-.usr-inv{
+.row-secondary{
     background-color: #8f969c;
     background-image: none;
     border:none;

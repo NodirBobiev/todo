@@ -38,6 +38,7 @@ CREATE TABLE invitation(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     team_id INTEGER NOT NULL,
+    seen BIT(1) DEFAULT 0,  -- 0->not_seen and 1->seen  
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (team_id) REFERENCES team (id),
     UNIQUE (user_id, team_id)

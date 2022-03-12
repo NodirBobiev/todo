@@ -102,16 +102,16 @@ function spawnRow({username="", id=-1, member=false, invited=false}={}){
     let bt = document.createElement("button");
     ph.innerText = username;
     
-    dv.classList.add("usr-row");
+    dv.classList.add("row");
     bt.classList.add("btn");
     if( member ){
-        dv.classList.add("usr-mbr");
+        dv.classList.add("row-succes");
         bt.classList.add("btn-danger");
         bt.setAttribute('onclick', 'kickUser('+id+')');
         bt.innerText = "Kick";
     }
     else if( invited ){
-        dv.classList.add("usr-inv");
+        dv.classList.add("row-secondary");
         bt.classList.add("btn-danger");
         bt.setAttribute('onclick', 'cancelInvite('+id+')');
         bt.innerText = "Cancel";

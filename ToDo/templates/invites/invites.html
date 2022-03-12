@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/invites.css') }}">
+    <h1>{% block title %} Invitations {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="form-group">
+        <div id="invite-pool" style="width: 600px;" class="hori-auto">
+            {% for team in teams %}
+                
+                <div class="row {{ 'row-secondary' if team['seen'] == 0 else '' }}">
+                    <p>{{ team['title'] }}</p>
+                    <div style="display: flex; flex-direction: row;">
+                        <buton class="btn mr-05 btn-success" onclick="respond(this, {{team['id']}}, 0);">Join</buton>
+                        <buton class="btn btn-danger" onclick="respond(this, -{{team['id']}}, 1);">Reject</buton>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/invites.js') }}"></script>
+{% endblock %}

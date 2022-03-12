@@ -4,7 +4,9 @@
 {% block header %}
     <h1>{% block title %} {{ team['title'] }} {% endblock %}</h1>
     <a class="btn" href="{{ url_for('task.create', team_id=team['id']) }}">New Task</a>
-    <a class="btn btn-secondary" href="{{ url_for('team.manage_users', id=team['id']) }}">{{'Manage Users' if team['owner_id'] == g.user['id'] else 'User List'}}</a>
+    {% if team['owner_id'] == g.user['id'] %}
+        <a class="btn btn-secondary" href="{{ url_for('team.manage_users', id=team['id']) }}">{{'Manage Users' if team['owner_id'] == g.user['id'] else 'User List'}}</a>
+    {% endif %}
     <form style="width:20%; align-items: flex-end;" action="{{ url_for('team.user_leave', team_id=team['id']) }}" method="post">
         {% if team['owner_id'] != g.user['id'] %}
             <input class="btn btn-danger vert-auto" type="submit" value="Leave" onclick="return confirm('Do you really want to leave?');">
@@ -46,29 +48,6 @@
             </div>
         </div>
 
-        <div style="box-sizing: border-box; width: 20%; border-left: 1px solid lightgray; padding-left:1rem;">
-            {% if team['owner_id'] == g.user['id'] %}
-                <form action="{{ url_for('team.add_user', id=team['id']) }}" method="post">
-                    <label class="input-label" for="username">Username</label>
-                    <input class="form-control" name="username" id="username" value="{{ request.form['username'] }}" required>
-                    <input class="btn btn-primary" type="submit" value="Add">
-                </form>
-                <hr>
-            {% endif %}
-            <div>
-                {% for user in users %}
-                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                        <div style="vertical-align:middle">{{ user['username'] }}</div>
-                        {% if team['owner_id'] == g.user['id'] %}
-                            <form action="{{ url_for('team.kick_user', team_id=team['id'], user_id=user['id']) }}" method="post">
-                                <input class="danger" type="submit" value="Delete" onclick="return confirm('Do you really want to remove the user?');">
-                            </form>
-                        {% endif %}
-                    </div>
-                    <hr>
-                {% endfor %}
-            </div>
-        </div>
     </div>
     
     
